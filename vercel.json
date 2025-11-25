@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm install --legacy-peer-deps && prisma generate && npm run build",
+  "ignoreCommand": "echo \"do not ignore\""
+}
