@@ -1,0 +1,95 @@
+// This is your Prisma schema file
+// Save this as: prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  name              String
+  email             String   @unique
+  password          String
+  primaryIdentity   String?
+  secondaryIdentity String?
+  currentStreak     Int      @default(0)
+  longestStreak     Int      @default(0)
+  boostReceived     Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  habits         Habit[]
+  completions    Completion[]
+  boostsSent     Boost[]      @relation("BoostSender")
+  boostsReceived Boost[]      @relation("BoostReceiver")
+  reflections    Reflection[]
+}
+
+model Identity {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now())
+}
+
+model Habit {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  identity       String
+  difficulty     String
+  reminderTime   String?
+  weeklySchedule Json // Store as JSON array [true, false, true...]
+  streak         Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completions Completion[]
+
+  @@index([userId])
+}
+
+model Completion {
+  id          String   @id @default(cuid())
+  habitId     String
+  userId      String
+  completedAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+  @@index([userId])
+  @@index([completedAt])
+}
+
+model Boost {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  identity   String
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("BoostSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("BoostReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([senderId])
+}
+
+model Reflection {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String   @db.Text
+  mood      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
