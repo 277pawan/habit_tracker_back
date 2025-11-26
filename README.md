@@ -88,6 +88,7 @@ Server will run on http://localhost:5000
 - Habit reminders sent based on schedule
 - Boost notifications when received
 - Cron job runs every minute to check reminders
+- Email can be dropped in your spam, So Please do check your spam folders.
 
 ### Authentication
 
@@ -125,10 +126,8 @@ For production deployment:
 
 ### Email not sending?
 
-- Verify SMTP credentials
-- Check Gmail app password
-- Ensure 2FA is enabled
-- Check firewall/antivirus settings
+- Create Resend API key.
+- Do check your spam folders too for email.
 
 ### CORS errors?
 
