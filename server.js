@@ -57,7 +57,7 @@ const generateToken = (user) => {
 
 const sendEmail = async (to, subject, html) => {
   try {
-    await resend.sendMail({
+    await resend.emails.send({
       from: process.env.SMTP_USER,
       to,
       subject,
