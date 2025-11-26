@@ -6,6 +6,7 @@ import nodemailer from "nodemailer";
 import cron from "node-cron";
 import prisma from "./connection/db.js";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 dotenv.config();
 
@@ -18,16 +19,17 @@ app.use(cors());
 app.use(express.json());
 
 // Email Configuration (Nodemailer)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: process.env.SMTP_PORT || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER || "your-email@gmail.com",
-    pass: process.env.SMTP_PASS || "your-app-password",
-  },
-});
-
+const resend = new Resend(process.env.RESEND_API_KEY);
+// const transporter = nodemailer.createTransport({
+//   host: process.env.SMTP_HOST || "smtp.gmail.com",
+//   port: process.env.SMTP_PORT || 587,
+//   secure: false,
+//   auth: {
+//     user: process.env.SMTP_USER || "your-email@gmail.com",
+//     pass: process.env.SMTP_PASS || "your-app-password",
+//   },
+// });
+//
 // Auth Middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -55,7 +57,7 @@ const generateToken = (user) => {
 
 const sendEmail = async (to, subject, html) => {
   try {
-    await transporter.sendMail({
+    await resend.sendMail({
       from: process.env.SMTP_USER,
       to,
       subject,
